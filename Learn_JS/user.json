@@ -1,0 +1,12 @@
+{
+    "name": "Ilich",
+    "age": 24,
+    "city": "Paphos",
+    "adress": {
+        "street": "Agiou Markou 4",
+        "zipcode": 8201
+    },
+    "todo": ["sleep","eat", "work", "learn"],
+    "hasdog": false,
+    "yacht": null
+}
