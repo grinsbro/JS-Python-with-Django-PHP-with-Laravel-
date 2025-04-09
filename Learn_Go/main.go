@@ -63,48 +63,111 @@ import (
 // }
 
 // Форматирование строк
-func main() {
-	// const IMTPow = 2
-	// var userHeight float64
-	// var userWeight float64
-	fmt.Println("____ Калькулятор индекса массы тела _____") // fmt.Println - это функция, которая выводит текст в консоль и добавляет перевод строки в конце.
-	// fmt.Print("Введите ваш рост: ")
-	// fmt.Scan(&userHeight)
-	// fmt.Print("Введите ваш вес: ")
-	// fmt.Scan(&userWeight)
-	//	IMT := userWeight / math.Pow(userHeight/100, IMTPow)
-	//	fmt.Printf("Ваш индекс массы тела: %v", IMT) // fmt.Printf выводит форматированный текст в консоль. %v - это спецификатор формата, который выводит значение переменной в зависимости от ее типа. Он автоматически определяет тип переменной и выводит его в нужном формате. Например, если переменная типа int, то он выведет ее как целое число, если float64, то выведет с плавающей точкой и т.д.
-	//                                 %.0f - это спецификатор формата, который выводит значение переменной с плавающей точкой с 0 знаками после запятой. То есть он округляет число до целого.
-	//	result := fmt.Sprintf("Ваш индекс массы тела: %.2f", IMT) // Sprintf - это функция, которая возвращает форматированную строку, а не выводит ее в консоль. Она позволяет сохранить форматированную строку в переменной и использовать ее позже. Например, можно сохранить ее в переменной и вывести в консоль позже или записать в файл.
+// func main() {
+// const IMTPow = 2
+// var userHeight float64
+// var userWeight float64
+// 	fmt.Println("____ Калькулятор индекса массы тела _____") // fmt.Println - это функция, которая выводит текст в консоль и добавляет перевод строки в конце.
+// fmt.Print("Введите ваш рост: ")
+// fmt.Scan(&userHeight)
+// fmt.Print("Введите ваш вес: ")
+// fmt.Scan(&userWeight)
+//	IMT := userWeight / math.Pow(userHeight/100, IMTPow)
+//	fmt.Printf("Ваш индекс массы тела: %v", IMT) // fmt.Printf выводит форматированный текст в консоль. %v - это спецификатор формата, который выводит значение переменной в зависимости от ее типа. Он автоматически определяет тип переменной и выводит его в нужном формате. Например, если переменная типа int, то он выведет ее как целое число, если float64, то выведет с плавающей точкой и т.д.
+//                                 %.0f - это спецификатор формата, который выводит значение переменной с плавающей точкой с 0 знаками после запятой. То есть он округляет число до целого.
+//	result := fmt.Sprintf("Ваш индекс массы тела: %.2f", IMT) // Sprintf - это функция, которая возвращает форматированную строку, а не выводит ее в консоль. Она позволяет сохранить форматированную строку в переменной и использовать ее позже. Например, можно сохранить ее в переменной и вывести в консоль позже или записать в файл.
 
-	// Перезапишу логику вычислений из основной ветки во вспомогательные функции
-	userHeight, userWeight := getUserInput()
-	IMT := calculateIMT(userHeight, userWeight)
-	outputResult(IMT)
-}
+// Перезапишу логику вычислений из основной ветки во вспомогательные функции
+//	userHeight, userWeight := getUserInput()
+//	IMT := calculateIMT(userHeight, userWeight)
+//	outputResult(IMT)
+//}
 
 // Функции
 // Функция для вывода результата
-func outputResult(IMT float64) {
-	result := fmt.Sprintf("Ваш индекс массы тела: %.2f", IMT)
-	fmt.Print(result)
-}
+//func outputResult(IMT float64) {
+//	result := fmt.Sprintf("Ваш индекс массы тела: %.2f", IMT)
+//	fmt.Print(result)
+//}
 
 // Функция для возврата значения индекса массы тела
-func calculateIMT(userHeight float64, userWeight float64) float64 {
-	const IMTPow = 2
-	IMT := userWeight / math.Pow(userHeight/100, IMTPow)
-	return IMT
-}
+//func calculateIMT(userHeight float64, userWeight float64) float64 {
+//	const IMTPow = 2
+//	IMT := userWeight / math.Pow(userHeight/100, IMTPow)
+//	return IMT
+//}
 
 // Функция для получения данных от пользователя и возврата нескольких значений
 // В Go в отличие от других языков можно возвращать две переменные
-func getUserInput() (float64, float64) { // Чтобы вернуть несколько значений нужно указать их типы в скобках.
+//func getUserInput() (float64, float64) { // Чтобы вернуть несколько значений нужно указать их типы в скобках.
+//	var userHeight float64
+//	var userWeight float64
+//	fmt.Print("Введите ваш рост: ")
+//	fmt.Scan(&userHeight)
+//	fmt.Print("Введите ваш вес: ")
+//	fmt.Scan(&userWeight)
+//	return userHeight, userWeight // Чтобы вернуть два значения нужно записать их через запятую
+//}
+
+// Условные операторы
+// Добавлю условные операторы, чтобы выводить результат в завимисости от индекса массы тела
+func main() {
+	fmt.Println("____ Калькулятор индекса массы тела _____")
+	userHeight, userWeight := getUserInput()
+	IMT := calculateIMT(userHeight, userWeight)
+
+	if IMT < 16 {
+		fmt.Println("У вас сильный дефицит массы тела")
+	} else if IMT < 18.5 {
+		fmt.Println("У вас дефицит массы тела")
+	} else if IMT < 25 {
+		fmt.Println("У вас нормальная масса тела")
+	} else if IMT < 30 {
+		fmt.Println("У вас избыточная масса тела")
+	} else if IMT < 35 {
+		fmt.Println("У вас ожирение первой степени")
+	} else if IMT < 40 {
+		fmt.Println("У вас ожирение второй степени")
+	} else if IMT >= 40 {
+		fmt.Println("У вас ожирение третьей степени")
+	}
+	// Можно также переписать это с помощью switch
+	// switch {
+	// case IMT < 16:
+	// 	fmt.Println("У вас сильный дефицит массы тела")
+	// case IMT < 18.5:
+	// 	fmt.Println("У вас дефицит массы тела")
+	// case IMT < 25:
+	// 	fmt.Println("У вас нормальная масса тела")
+	// case IMT < 30:
+	// 	fmt.Println("У вас избыточная масса тела")
+	// case IMT < 35:
+	// 	fmt.Println("У вас ожирение первой степени")
+	// case IMT < 40:
+	// 	fmt.Println("У вас ожирение второй степени")
+	// case IMT >= 40:
+	// 	fmt.Println("У вас ожирение третьей степени")
+	// }
+	outputResult(IMT)
+}
+
+func getUserInput() (float64, float64) {
 	var userHeight float64
 	var userWeight float64
 	fmt.Print("Введите ваш рост: ")
 	fmt.Scan(&userHeight)
 	fmt.Print("Введите ваш вес: ")
 	fmt.Scan(&userWeight)
-	return userHeight, userWeight // Чтобы вернуть два значения нужно записать их через запятую
+	return userHeight, userWeight
+}
+
+func calculateIMT(userHeight float64, userWeight float64) float64 {
+	const IMTPow = 2
+	IMT := userWeight / math.Pow(userHeight/100, IMTPow)
+	return IMT
+}
+
+func outputResult(IMT float64) {
+	result := fmt.Sprintf(("Ваш индекс массы тела: %.2f"), IMT)
+	fmt.Print(result)
 }
