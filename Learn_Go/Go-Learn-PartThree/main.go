@@ -21,8 +21,11 @@ import "fmt"
 
 // Приложение для менеджмента закладок (с меню)
 
+type stringMap = map[string]string // Таким образом можно объявить тип данных, чтобы не писать каждый раз долгие названия
+// Это также называется alias или псевдоним
+
 func main() {
-	bookMarks := map[string]string{}
+	bookMarks := stringMap{}
 
 	fmt.Println("Добро пожаловать в менеджер закладок!")
 
@@ -61,7 +64,7 @@ func getUserInput() int {
 	return answer
 }
 
-func showMarks(bookMarks map[string]string) {
+func showMarks(bookMarks stringMap) {
 	if len(bookMarks) == 0 {
 		fmt.Println("Ой, вы еще не добавляли закладок")
 	}
@@ -70,7 +73,7 @@ func showMarks(bookMarks map[string]string) {
 	}
 }
 
-func addMark(bookMarks map[string]string) map[string]string {
+func addMark(bookMarks stringMap) stringMap {
 	var key string
 	var value string
 	fmt.Print("Введите название закладки:")
@@ -81,7 +84,7 @@ func addMark(bookMarks map[string]string) map[string]string {
 	return bookMarks
 }
 
-func deleteMark(bookMarks map[string]string) map[string]string {
+func deleteMark(bookMarks stringMap) stringMap {
 	var key string
 	fmt.Println("Введите название закладки для удаления: ")
 	fmt.Scan(&key)
