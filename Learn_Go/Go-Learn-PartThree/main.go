@@ -38,10 +38,10 @@ Menu: // Это label, чтобы можно было использовать b
 			fmt.Println("Ваши закладки:")
 			showMarks(bookMarks)
 		case 2:
-			bookMarks = addMark(bookMarks)
+			addMark(bookMarks)
 			fmt.Println("Закладка добавлена!")
 		case 3:
-			bookMarks = deleteMark(bookMarks)
+			deleteMark(bookMarks)
 			fmt.Println("Закладка удалена!")
 		case 4:
 			fmt.Println("Выходим из приложения...")
@@ -73,7 +73,7 @@ func showMarks(bookMarks stringMap) {
 	}
 }
 
-func addMark(bookMarks stringMap) stringMap {
+func addMark(bookMarks stringMap) {
 	var key string
 	var value string
 	fmt.Print("Введите название закладки:")
@@ -81,13 +81,11 @@ func addMark(bookMarks stringMap) stringMap {
 	fmt.Print("Введите ссылку:")
 	fmt.Scan(&value)
 	bookMarks[key] = value
-	return bookMarks
 }
 
-func deleteMark(bookMarks stringMap) stringMap {
+func deleteMark(bookMarks stringMap) {
 	var key string
 	fmt.Println("Введите название закладки для удаления: ")
 	fmt.Scan(&key)
 	delete(bookMarks, key)
-	return bookMarks
 }
