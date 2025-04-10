@@ -79,29 +79,58 @@ import "fmt"
 
 // Продолжение работы с массивами (циклы по массивам и слайсам)
 
+// func main() {
+// 	tr1 := []int{1, 2, 3}
+// 	tr2 := []int{4, 5, 6}
+// 	// tr1 = append(tr1, 7, 8, 9) // append принимает несколько аргументов для добавления в массив
+// 	// Чтобы добавить к слайсу слайс, нужно использовать unpack, который записывается как ...
+// 	// Например:
+// 	tr1 = append(tr1, tr2...)
+
+// 	// Цикл по массиву:
+// 	for i, v := range tr1 { // range возвращает индекс и значение элемента массива. Нужно всегда испольлзовать два аргумента, если не нужно использовать индекс, то можно использовать "_" вместо него и наоборот
+// 		fmt.Println(i, v)
+// 	}
+
+// 	fmt.Println("Добро пожаловать в программу учета финансов!")
+// 	var transactions = []float64{}
+// 	for {
+// 		operation := scanTransaction()
+// 		if operation == 0 {
+// 			fmt.Printf("Вот список ваших транзакций: %v\n", transactions)
+// 			break
+// 		}
+// 		transactions = append(transactions, operation)
+// 		fmt.Println("Транзакция добавлена!")
+// 	}
+// }
+
+// func scanTransaction() float64 {
+// 	var operation float64
+// 	fmt.Println("Введите транзакцию для учета, если хотите получить результат, введите 0:")
+// 	fmt.Scan(&operation)
+// 	return operation
+// }
+
+// Дополнение к приложению учета финансов. Добавляю вывод итогового баланса
+
 func main() {
-	tr1 := []int{1, 2, 3}
-	tr2 := []int{4, 5, 6}
-	// tr1 = append(tr1, 7, 8, 9) // append принимает несколько аргументов для добавления в массив
-	// Чтобы добавить к слайсу слайс, нужно использовать unpack, который записывается как ...
-	// Например:
-	tr1 = append(tr1, tr2...)
-
-	// Цикл по массиву:
-	for i, v := range tr1 { // range возвращает индекс и значение элемента массива. Нужно всегда испольлзовать два аргумента, если не нужно использовать индекс, то можно использовать "_" вместо него и наоборот
-		fmt.Println(i, v)
-	}
-
 	fmt.Println("Добро пожаловать в программу учета финансов!")
 	var transactions = []float64{}
 	for {
 		operation := scanTransaction()
 		if operation == 0 {
-			fmt.Printf("Вот список ваших транзакций: %v\n", transactions)
 			break
 		}
 		transactions = append(transactions, operation)
-		fmt.Println("Транзакция добавлена!")
+	}
+	balance := calculateBalance(transactions)
+	if balance > 0 {
+		fmt.Printf("Ура, Вы в плюсе! Ваш баланс составляет: %.2f\n", balance)
+	} else if balance < 0 {
+		fmt.Printf("Увы, Вы в минусе! Ваш баланс составляет: %.2f\n", balance)
+	} else {
+		fmt.Println("Вы на нуле!")
 	}
 }
 
@@ -109,5 +138,14 @@ func scanTransaction() float64 {
 	var operation float64
 	fmt.Println("Введите транзакцию для учета, если хотите получить результат, введите 0:")
 	fmt.Scan(&operation)
+	fmt.Println("Транзакция добавлена!")
 	return operation
+}
+
+func calculateBalance(transactions []float64) float64 {
+	balance := 0.0
+	for _, value := range transactions {
+		balance += value
+	}
+	return balance
 }
