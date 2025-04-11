@@ -205,12 +205,14 @@ func createAccount() {
 		fmt.Println("Неверный формат URL или Логина")
 		return
 	}
-	file, err := myAccount.ToBytes()
+	vault := account.NewVault()
+	vault.AddAccount(*myAccount)
+	data, err := vault.ToBytes()
 	if err != nil {
 		color.Red("Ошибка обработки данных")
 		return
 	}
-	filemanagement.WriteFile(file, "data.json")
+	filemanagement.WriteFile(data, "data.json")
 }
 
 func promptData(prompt string) string {
