@@ -1,11 +1,8 @@
 package main
 
 import (
-	"errors"
 	"fmt"
-	"math/rand/v2"
-	"net/url"
-	"time"
+	"go-learn-part-four/account" // Таким образом импортируется пакет, который был создан. Всегда необходимо указывать имя модуля, который был создан в go.mod, а потом путь к папке
 )
 
 // func main() {
@@ -35,79 +32,79 @@ import (
 // 	}
 // }
 
-type account struct {
-	login    string
-	password string
-	url      string
-} // Это стракт или структура. Структура это набор полей, которые могут быть разного типа. Структуры это что-то похожее на классы в других языках программирования, но в Go нет наследования (В привычном смысле) и полиморфизма, поэтому структуры это просто набор полей
+// type account struct {
+// 	login    string
+// 	password string
+// 	url      string
+// } // Это стракт или структура. Структура это набор полей, которые могут быть разного типа. Структуры это что-то похожее на классы в других языках программирования, но в Go нет наследования (В привычном смысле) и полиморфизма, поэтому структуры это просто набор полей
 
-// Наследование в Go реализуется через композицию.
-type accountWithTimeStamp struct {
-	createdAt time.Time
-	updatedAt time.Time
-	account   // Это встраивание структуры. То есть при инстанциировании структуры accountWithTimeStamp, в ней будет доступна структура account
-}
+// // Наследование в Go реализуется через композицию.
+// type accountWithTimeStamp struct {
+// 	createdAt time.Time
+// 	updatedAt time.Time
+// 	account   // Это встраивание структуры. То есть при инстанциировании структуры accountWithTimeStamp, в ней будет доступна структура account
+// }
 
-// Методы страктов
-// Методы в основном записываются рядом со страктами
-func (acc account) outputData() { // Чтобы объявить метод стракта, нужно указать его имя между объявлением функции и ее именем
-	fmt.Println(acc.login, acc.password, acc.url)
-}
+// // Методы страктов
+// // Методы в основном записываются рядом со страктами
+// func (acc account) outputData() { // Чтобы объявить метод стракта, нужно указать его имя между объявлением функции и ее именем
+// 	fmt.Println(acc.login, acc.password, acc.url)
+// }
 
-// Переписываю функцию генерации пароля в метод структуры
-func (acc *account) generatePassword(n int) {
-	password := make([]rune, n)
-	for i := range password {
-		password[i] = letterRunes[rand.IntN(len(letterRunes))]
-	}
-	acc.password = string(password)
-}
+// // Переписываю функцию генерации пароля в метод структуры
+// func (acc *account) generatePassword(n int) {
+// 	password := make([]rune, n)
+// 	for i := range password {
+// 		password[i] = letterRunes[rand.IntN(len(letterRunes))]
+// 	}
+// 	acc.password = string(password)
+// }
 
-// Это конструктор структуры. В отличие от других языков он записывается вне структуры. Здесь прописывается логика по созданию инстанций структуры
-func newAccount(login, password, urlString string) (*account, error) { // Общепринято называть конструкторы по имени структуры добавляя new в начале
-	if login == "" {
-		return nil, errors.New("login cannot be empty")
-	}
-	_, err := url.ParseRequestURI(urlString)
-	if err != nil {
-		return nil, errors.New("invalid URL")
-	}
-	newAcc := &account{
-		login:    login,
-		password: password,
-		url:      urlString,
-	}
-	if password == "" {
-		newAcc.generatePassword(8)
-	}
-	return newAcc, nil
-}
+// // Это конструктор структуры. В отличие от других языков он записывается вне структуры. Здесь прописывается логика по созданию инстанций структуры
+// func newAccount(login, password, urlString string) (*account, error) { // Общепринято называть конструкторы по имени структуры добавляя new в начале
+// 	if login == "" {
+// 		return nil, errors.New("login cannot be empty")
+// 	}
+// 	_, err := url.ParseRequestURI(urlString)
+// 	if err != nil {
+// 		return nil, errors.New("invalid URL")
+// 	}
+// 	newAcc := &account{
+// 		login:    login,
+// 		password: password,
+// 		url:      urlString,
+// 	}
+// 	if password == "" {
+// 		newAcc.generatePassword(8)
+// 	}
+// 	return newAcc, nil
+// }
 
-// Конструктор наследующей структуры:
-func newAccountWithTimeStamp(login, password, urlString string) (*accountWithTimeStamp, error) { // Общепринято называть конструкторы по имени структуры добавляя new в начале
-	if login == "" {
-		return nil, errors.New("login cannot be empty")
-	}
-	_, err := url.ParseRequestURI(urlString)
-	if err != nil {
-		return nil, errors.New("invalid URL")
-	}
-	newAcc := &accountWithTimeStamp{
-		createdAt: time.Now(),
-		updatedAt: time.Now(),
-		account: account{
-			login:    login,
-			password: password,
-			url:      urlString,
-		}, // Так зыписывается логика создания инстанции структуры, которая наследует другую структуру
-	}
-	if password == "" {
-		newAcc.generatePassword(8) // Такая запись все равно валидна, потому что мы инстанциировали структуру account внутри структуры accountWithTimeStamp, и поэтому у нас есть доступ к методу generatePassword
-	}
-	return newAcc, nil
-}
+// // Конструктор наследующей структуры:
+// func newAccountWithTimeStamp(login, password, urlString string) (*accountWithTimeStamp, error) { // Общепринято называть конструкторы по имени структуры добавляя new в начале
+// 	if login == "" {
+// 		return nil, errors.New("login cannot be empty")
+// 	}
+// 	_, err := url.ParseRequestURI(urlString)
+// 	if err != nil {
+// 		return nil, errors.New("invalid URL")
+// 	}
+// 	newAcc := &accountWithTimeStamp{
+// 		createdAt: time.Now(),
+// 		updatedAt: time.Now(),
+// 		account: account{
+// 			login:    login,
+// 			password: password,
+// 			url:      urlString,
+// 		}, // Так зыписывается логика создания инстанции структуры, которая наследует другую структуру
+// 	}
+// 	if password == "" {
+// 		newAcc.generatePassword(8) // Такая запись все равно валидна, потому что мы инстанциировали структуру account внутри структуры accountWithTimeStamp, и поэтому у нас есть доступ к методу generatePassword
+// 	}
+// 	return newAcc, nil
+// }
 
-var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*")
+// var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*")
 
 func main() {
 
@@ -144,7 +141,8 @@ func main() {
 	// myAccount.outputData() // Чтобы вызвать метод структуры, нужно сначала инстанциировать структуру, а потом вызвать метод структуры. Внутри метода можно использовать поля структуры, к которой он относится. То есть, если мы вызываем метод структуры account, то внутри метода мы можем использовать поля этой структуры
 
 	// Инстанциирую новую структуру:
-	myAccount, err := newAccountWithTimeStamp(userLogin, userPassword, userUrl)
+	myAccount, err := account.NewAccountWithTimeStamp(userLogin, userPassword, userUrl)
+	// Таким образом импортируется метод из пакета. Также как со встроенными пакетами
 	if err != nil {
 		fmt.Println("Неверный формат URL или Логина")
 		return
