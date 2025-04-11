@@ -1,8 +1,10 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"math/rand/v2"
+	"net/url"
 )
 
 // func main() {
@@ -53,6 +55,20 @@ func (acc *account) generatePassword(n int) {
 	acc.password = string(password)
 }
 
+// Это конструктор структуры. В отличие от других языков он записывается вне структуры. Здесь прописывается логика по созданию инстанций структуры
+func newAccount(login, password, urlString string) (*account, error) { // Общепринято называть конструкторы по имени структуры добавляя new в начале
+
+	_, err := url.ParseRequestURI(urlString)
+	if err != nil {
+		return nil, errors.New("invalid URL")
+	}
+	return &account{
+		login:    login,
+		password: password,
+		url:      urlString,
+	}, nil
+}
+
 var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*")
 
 func main() {
@@ -74,12 +90,17 @@ func main() {
 	// 	password,
 	// 	url,
 	// } // Можно инстанциировать структуру таким образом, но тогда порядок очень важен. Нужно передавать все в том же порядке, что и в структуре, иначе возникнет путаница
-	myAccount := account{
-		login: userLogin,
-		url:   userUrl,
-	} // Если инстранциировать структуру таким образом, то можно записывать в любом порядке
+	// myAccount := account{
+	// 	login: userLogin,
+	// 	url:   userUrl,
+	// } // Если инстранциировать структуру таким образом, то можно записывать в любом порядке
 	// При такой записи можно даже пропустить одно значение, и тогда оно будет пустым. Если пропустить какую-либо из переменных в первом случае, то выпадет ошибка
 
+	myAccount, err := newAccount(userLogin, "", userUrl) // Так можно инстанциировать структуру, используя конструктор. Такой метод нужен, если есть сложная система валидации данных и тд.
+	if err != nil {
+		fmt.Println("Неверный формат URL")
+		return
+	}
 	myAccount.generatePassword(userPasswordLength)
 	fmt.Println("Ваш новый пароль: ", myAccount.password)
 	myAccount.outputData() // Чтобы вызвать метод структуры, нужно сначала инстанциировать структуру, а потом вызвать метод структуры. Внутри метода можно использовать поля структуры, к которой он относится. То есть, если мы вызываем метод структуры account, то внутри метода мы можем использовать поля этой структуры
