@@ -7,16 +7,17 @@ import (
 	"github.com/fatih/color"
 )
 
-func ReadFile() {
+func ReadFile(name string) ([]byte, error) {
 	color.Green("Reading file")
 	// file err := os.Open("test.txt") // Таким образом открывается файл, но таким образом файл читается по байтам
-	data, err := os.ReadFile("test.txt") // Таким образом файл читается целиком. Это можно использовать, когда файл небольших размеров
+	data, err := os.ReadFile(name) // Таким образом файл читается целиком. Это можно использовать, когда файл небольших размеров
 	if err != nil {
 		fmt.Println(err)
-		return
+		return nil, err
 	}
 	// fmt.Println(data) // Это байтовый массив, который нужно преобразовать в строку
-	fmt.Println(string(data))
+	// fmt.Println(string(data))
+	return data, nil
 }
 
 func WriteFile(content []byte, name string) {
