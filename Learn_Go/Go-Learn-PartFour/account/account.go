@@ -31,6 +31,8 @@ type Account struct {
 
 func (acc *Account) OutputData() { // Чтобы объявить метод стракта, нужно указать его имя между объявлением функции и ее именем
 	color.Cyan(acc.Login)
+	color.Cyan(acc.Password)
+	color.Cyan(acc.Url)
 	// fmt.Println(acc.login, acc.password, acc.url)
 }
 

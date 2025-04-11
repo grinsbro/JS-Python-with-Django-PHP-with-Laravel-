@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"go-learn-part-four/account" // Таким образом импортируется пакет, который был создан. Всегда необходимо указывать имя модуля, который был создан в go.mod, а потом путь к папке
-	"go-learn-part-four/filemanagement"
 
 	"github.com/fatih/color"
 )
@@ -112,23 +111,18 @@ import (
 func main() {
 
 	color.Green("Добро пожаловать в программу менеджера паролей!")
-
+	vault := account.NewVault()
 Menu:
 	for {
 		answer := getMenu()
 
 		switch answer {
 		case 1:
-			createAccount()
+			createAccount(vault)
 		case 2:
-			var url string
-			fmt.Println("Введите сайт для поиска: ")
-			fmt.Scan(&url)
-			// filemanagement.ReadFile(url)
+			findAccount(vault)
 		case 3:
-			var url string
-			fmt.Println("Введите сайт для удаления данных: ")
-			fmt.Scan(&url)
+			deleteAccount(vault)
 		default:
 			color.Red("Выходим из программы...")
 			break Menu
@@ -196,7 +190,7 @@ func getMenu() int {
 	return answer
 }
 
-func createAccount() {
+func createAccount(vault *account.Vault) {
 	userLogin := promptData("Введите логин: ")
 	userPassword := promptData("Введите пароль: ")
 	userUrl := promptData("Введите URL: ")
@@ -205,14 +199,36 @@ func createAccount() {
 		fmt.Println("Неверный формат URL или Логина")
 		return
 	}
-	vault := account.NewVault()
+	vault = account.NewVault()
 	vault.AddAccount(*myAccount)
-	data, err := vault.ToBytes()
-	if err != nil {
-		color.Red("Ошибка обработки данных")
-		return
+	// data, err := vault.ToBytes()
+	// if err != nil {
+	// 	color.Red("Ошибка обработки данных")
+	// 	return
+	// }
+	// filemanagement.WriteFile(data, "data.json")
+}
+
+func findAccount(vault *account.Vault) {
+	url := promptData("Введите URL для поиска: ")
+	accounts := vault.FindAccountsByUrl(url)
+	if len(accounts) == 0 {
+		color.Red("Не найдено аккаунтов с таким URL")
 	}
-	filemanagement.WriteFile(data, "data.json")
+
+	for _, account := range accounts {
+		account.OutputData()
+	}
+}
+
+func deleteAccount(vault *account.Vault) {
+	url := promptData("Введите URL для удаления: ")
+	isDeleted := vault.DeleteAccountByUrl(url)
+	if isDeleted {
+		color.Green("Аккаунт удален")
+	} else {
+		color.Red("Аккаунт не найден")
+	}
 }
 
 func promptData(prompt string) string {
