@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math/rand/v2"
 	"net/url"
+	"time"
 )
 
 // func main() {
@@ -38,7 +39,14 @@ type account struct {
 	login    string
 	password string
 	url      string
-} // Это стракт или структура. Структура это набор полей, которые могут быть разного типа. Структуры это что-то похожее на классы в других языках программирования, но в Go нет наследования и полиморфизма, поэтому структуры это просто набор полей
+} // Это стракт или структура. Структура это набор полей, которые могут быть разного типа. Структуры это что-то похожее на классы в других языках программирования, но в Go нет наследования (В привычном смысле) и полиморфизма, поэтому структуры это просто набор полей
+
+// Наследование в Go реализуется через композицию.
+type accountWithTimeStamp struct {
+	createdAt time.Time
+	updatedAt time.Time
+	account   // Это встраивание структуры. То есть при инстанциировании структуры accountWithTimeStamp, в ней будет доступна структура account
+}
 
 // Методы страктов
 // Методы в основном записываются рядом со страктами
@@ -75,6 +83,30 @@ func newAccount(login, password, urlString string) (*account, error) { // Общ
 	return newAcc, nil
 }
 
+// Конструктор наследующей структуры:
+func newAccountWithTimeStamp(login, password, urlString string) (*accountWithTimeStamp, error) { // Общепринято называть конструкторы по имени структуры добавляя new в начале
+	if login == "" {
+		return nil, errors.New("login cannot be empty")
+	}
+	_, err := url.ParseRequestURI(urlString)
+	if err != nil {
+		return nil, errors.New("invalid URL")
+	}
+	newAcc := &accountWithTimeStamp{
+		createdAt: time.Now(),
+		updatedAt: time.Now(),
+		account: account{
+			login:    login,
+			password: password,
+			url:      urlString,
+		}, // Так зыписывается логика создания инстанции структуры, которая наследует другую структуру
+	}
+	if password == "" {
+		newAcc.generatePassword(8) // Такая запись все равно валидна, потому что мы инстанциировали структуру account внутри структуры accountWithTimeStamp, и поэтому у нас есть доступ к методу generatePassword
+	}
+	return newAcc, nil
+}
+
 var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*")
 
 func main() {
@@ -102,14 +134,22 @@ func main() {
 	// } // Если инстранциировать структуру таким образом, то можно записывать в любом порядке
 	// При такой записи можно даже пропустить одно значение, и тогда оно будет пустым. Если пропустить какую-либо из переменных в первом случае, то выпадет ошибка
 
-	myAccount, err := newAccount(userLogin, userPassword, userUrl) // Так можно инстанциировать структуру, используя конструктор. Такой метод нужен, если есть сложная система валидации данных и тд.
+	// myAccount, err := newAccount(userLogin, userPassword, userUrl) // Так можно инстанциировать структуру, используя конструктор. Такой метод нужен, если есть сложная система валидации данных и тд.
+	// if err != nil {
+	// 	fmt.Println("Неверный формат URL или Логина")
+	// 	return
+	// }
+	// // myAccount.generatePassword(userPasswordLength)
+	// fmt.Println("Ваш новый пароль: ", myAccount.password)
+	// myAccount.outputData() // Чтобы вызвать метод структуры, нужно сначала инстанциировать структуру, а потом вызвать метод структуры. Внутри метода можно использовать поля структуры, к которой он относится. То есть, если мы вызываем метод структуры account, то внутри метода мы можем использовать поля этой структуры
+
+	// Инстанциирую новую структуру:
+	myAccount, err := newAccountWithTimeStamp(userLogin, userPassword, userUrl)
 	if err != nil {
 		fmt.Println("Неверный формат URL или Логина")
 		return
 	}
-	// myAccount.generatePassword(userPasswordLength)
-	fmt.Println("Ваш новый пароль: ", myAccount.password)
-	myAccount.outputData() // Чтобы вызвать метод структуры, нужно сначала инстанциировать структуру, а потом вызвать метод структуры. Внутри метода можно использовать поля структуры, к которой он относится. То есть, если мы вызываем метод структуры account, то внутри метода мы можем использовать поля этой структуры
+	fmt.Println(myAccount)
 
 	// outputPassword(&myAccount)
 
