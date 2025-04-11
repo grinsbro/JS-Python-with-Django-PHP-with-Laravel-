@@ -4,15 +4,17 @@ package account
 
 import (
 	"errors"
-	"fmt"
+	// "fmt"
 	"math/rand/v2"
 	"net/url"
 	"time"
+
+	"github.com/fatih/color"
 )
 
 var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*")
 
-type account struct {
+type Account struct {
 	login    string
 	password string
 	url      string
@@ -21,14 +23,15 @@ type account struct {
 type accountWithTimeStamp struct {
 	createdAt time.Time
 	updatedAt time.Time
-	account   // Это встраивание структуры. То есть при инстанциировании структуры accountWithTimeStamp, в ней будет доступна структура account
+	Account   // Это встраивание структуры. То есть при инстанциировании структуры accountWithTimeStamp, в ней будет доступна структура account
 }
 
-func (acc account) OutputData() { // Чтобы объявить метод стракта, нужно указать его имя между объявлением функции и ее именем
-	fmt.Println(acc.login, acc.password, acc.url)
+func (acc *Account) OutputData() { // Чтобы объявить метод стракта, нужно указать его имя между объявлением функции и ее именем
+	color.Cyan(acc.login)
+	// fmt.Println(acc.login, acc.password, acc.url)
 }
 
-func (acc *account) generatePassword(n int) {
+func (acc *Account) generatePassword(n int) {
 	password := make([]rune, n)
 	for i := range password {
 		password[i] = letterRunes[rand.IntN(len(letterRunes))]
@@ -36,7 +39,7 @@ func (acc *account) generatePassword(n int) {
 	acc.password = string(password)
 }
 
-func newAccount(login, password, urlString string) (*account, error) { // Общепринято называть конструкторы по имени структуры добавляя new в начале
+func newAccount(login, password, urlString string) (*Account, error) { // Общепринято называть конструкторы по имени структуры добавляя new в начале
 	if login == "" {
 		return nil, errors.New("login cannot be empty")
 	}
@@ -44,7 +47,7 @@ func newAccount(login, password, urlString string) (*account, error) { // Общ
 	if err != nil {
 		return nil, errors.New("invalid URL")
 	}
-	newAcc := &account{
+	newAcc := &Account{
 		login:    login,
 		password: password,
 		url:      urlString,
@@ -67,7 +70,7 @@ func NewAccountWithTimeStamp(login, password, urlString string) (*accountWithTim
 	newAcc := &accountWithTimeStamp{
 		createdAt: time.Now(),
 		updatedAt: time.Now(),
-		account: account{
+		Account: Account{
 			login:    login,
 			password: password,
 			url:      urlString,
