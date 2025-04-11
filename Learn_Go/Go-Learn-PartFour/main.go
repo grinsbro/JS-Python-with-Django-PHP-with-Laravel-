@@ -38,22 +38,35 @@ type account struct {
 	url      string
 } // Это стракт или структура. Структура это набор полей, которые могут быть разного типа. Структуры это что-то похожее на классы в других языках программирования, но в Go нет наследования и полиморфизма, поэтому структуры это просто набор полей
 
+// Методы страктов
+// Методы в основном записываются рядом со страктами
+func (acc account) outputData() { // Чтобы объявить метод стракта, нужно указать его имя между объявлением функции и ее именем
+	fmt.Println(acc.login, acc.password, acc.url)
+}
+
+// Переписываю функцию генерации пароля в метод структуры
+func (acc *account) generatePassword(n int) {
+	password := make([]rune, n)
+	for i := range password {
+		password[i] = letterRunes[rand.IntN(len(letterRunes))]
+	}
+	acc.password = string(password)
+}
+
 var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*")
 
 func main() {
-
-	fmt.Println("Введите сколько символов вы хотите в пароле: ")
-	var userPasswordLength int
-	fmt.Scan(&userPasswordLength)
 
 	// str := []rune("Привет!)") // Это рунный массив. Руна это по alias для int32, который используется для хранения символов в Go. То есть, когда мы хотим пройтись for по строке, то изначально все символы будут переведены в unicode, и если мы хотим получить сами символы, то нужно вызывать функцию string()
 	// for _, ch := range string(str) {
 	// 	fmt.Println(ch, string(ch))
 	// }
 
-	userPassword := generatePassword(userPasswordLength)
-	fmt.Println(userPassword)
 	userLogin := promptData("Введите логин: ")
+	// userPassword := promptData("Введите пароль: ")
+	fmt.Println("Введите сколько символов вы хотите в пароле: ")
+	var userPasswordLength int
+	fmt.Scan(&userPasswordLength)
 	userUrl := promptData("Введите URL: ")
 
 	// account1 := account{
@@ -62,13 +75,16 @@ func main() {
 	// 	url,
 	// } // Можно инстанциировать структуру таким образом, но тогда порядок очень важен. Нужно передавать все в том же порядке, что и в структуре, иначе возникнет путаница
 	myAccount := account{
-		login:    userLogin,
-		password: userPassword,
-		url:      userUrl,
+		login: userLogin,
+		url:   userUrl,
 	} // Если инстранциировать структуру таким образом, то можно записывать в любом порядке
 	// При такой записи можно даже пропустить одно значение, и тогда оно будет пустым. Если пропустить какую-либо из переменных в первом случае, то выпадет ошибка
 
-	outputPassword(&myAccount)
+	myAccount.generatePassword(userPasswordLength)
+	fmt.Println("Ваш новый пароль: ", myAccount.password)
+	myAccount.outputData() // Чтобы вызвать метод структуры, нужно сначала инстанциировать структуру, а потом вызвать метод структуры. Внутри метода можно использовать поля структуры, к которой он относится. То есть, если мы вызываем метод структуры account, то внутри метода мы можем использовать поля этой структуры
+
+	// outputPassword(&myAccount)
 
 }
 
@@ -79,14 +95,14 @@ func promptData(prompt string) string {
 	return res
 }
 
-func outputPassword(acc *account) {
-	fmt.Println(acc.login, acc.password, acc.url)
-}
+// func outputPassword(acc *account) {
+// 	fmt.Println(acc.login, acc.password, acc.url)
+// }
 
-func generatePassword(n int) string {
-	password := make([]rune, n)
-	for i := range password {
-		password[i] = letterRunes[rand.IntN(len(letterRunes))]
-	}
-	return string(password)
-}
+// func generatePassword(n int) string {
+// 	password := make([]rune, n)
+// 	for i := range password {
+// 		password[i] = letterRunes[rand.IntN(len(letterRunes))]
+// 	}
+// 	return string(password)
+// }
