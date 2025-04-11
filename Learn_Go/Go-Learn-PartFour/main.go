@@ -57,16 +57,22 @@ func (acc *account) generatePassword(n int) {
 
 // Это конструктор структуры. В отличие от других языков он записывается вне структуры. Здесь прописывается логика по созданию инстанций структуры
 func newAccount(login, password, urlString string) (*account, error) { // Общепринято называть конструкторы по имени структуры добавляя new в начале
-
+	if login == "" {
+		return nil, errors.New("login cannot be empty")
+	}
 	_, err := url.ParseRequestURI(urlString)
 	if err != nil {
 		return nil, errors.New("invalid URL")
 	}
-	return &account{
+	newAcc := &account{
 		login:    login,
 		password: password,
 		url:      urlString,
-	}, nil
+	}
+	if password == "" {
+		newAcc.generatePassword(8)
+	}
+	return newAcc, nil
 }
 
 var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*")
@@ -79,10 +85,10 @@ func main() {
 	// }
 
 	userLogin := promptData("Введите логин: ")
-	// userPassword := promptData("Введите пароль: ")
-	fmt.Println("Введите сколько символов вы хотите в пароле: ")
-	var userPasswordLength int
-	fmt.Scan(&userPasswordLength)
+	userPassword := promptData("Введите пароль: ")
+	// fmt.Println("Введите сколько символов вы хотите в пароле: ")
+	// var userPasswordLength int
+	// fmt.Scan(&userPasswordLength)
 	userUrl := promptData("Введите URL: ")
 
 	// account1 := account{
@@ -96,12 +102,12 @@ func main() {
 	// } // Если инстранциировать структуру таким образом, то можно записывать в любом порядке
 	// При такой записи можно даже пропустить одно значение, и тогда оно будет пустым. Если пропустить какую-либо из переменных в первом случае, то выпадет ошибка
 
-	myAccount, err := newAccount(userLogin, "", userUrl) // Так можно инстанциировать структуру, используя конструктор. Такой метод нужен, если есть сложная система валидации данных и тд.
+	myAccount, err := newAccount(userLogin, userPassword, userUrl) // Так можно инстанциировать структуру, используя конструктор. Такой метод нужен, если есть сложная система валидации данных и тд.
 	if err != nil {
-		fmt.Println("Неверный формат URL")
+		fmt.Println("Неверный формат URL или Логина")
 		return
 	}
-	myAccount.generatePassword(userPasswordLength)
+	// myAccount.generatePassword(userPasswordLength)
 	fmt.Println("Ваш новый пароль: ", myAccount.password)
 	myAccount.outputData() // Чтобы вызвать метод структуры, нужно сначала инстанциировать структуру, а потом вызвать метод структуры. Внутри метода можно использовать поля структуры, к которой он относится. То есть, если мы вызываем метод структуры account, то внутри метода мы можем использовать поля этой структуры
 
@@ -112,7 +118,7 @@ func main() {
 func promptData(prompt string) string {
 	fmt.Print(prompt)
 	var res string
-	fmt.Scan(&res)
+	fmt.Scanln(&res)
 	return res
 }
 
