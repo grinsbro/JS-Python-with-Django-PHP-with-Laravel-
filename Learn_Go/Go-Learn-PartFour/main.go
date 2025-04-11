@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"go-learn-part-four/account" // Таким образом импортируется пакет, который был создан. Всегда необходимо указывать имя модуля, который был создан в go.mod, а потом путь к папке
 	"go-learn-part-four/filemanagement"
+
+	"github.com/fatih/color"
 )
 
 // func main() {
@@ -109,20 +111,45 @@ import (
 
 func main() {
 
-	filemanagement.WriteFile("Привет! Я файл", "test.txt")
-	filemanagement.ReadFile()
+	color.Green("Добро пожаловать в программу менеджера паролей!")
+
+Menu:
+	for {
+		answer := getMenu()
+
+		switch answer {
+		case 1:
+			createAccount()
+		case 2:
+			var url string
+			fmt.Println("Введите сайт для поиска: ")
+			fmt.Scan(&url)
+			// filemanagement.ReadFile(url)
+		case 3:
+			var url string
+			fmt.Println("Введите сайт для удаления данных: ")
+			fmt.Scan(&url)
+		default:
+			color.Red("Выходим из программы...")
+			break Menu
+		}
+
+	}
+
+	// filemanagement.WriteFile("Привет! Я файл", "test.txt")
+	// filemanagement.ReadFile()
 
 	// str := []rune("Привет!)") // Это рунный массив. Руна это по alias для int32, который используется для хранения символов в Go. То есть, когда мы хотим пройтись for по строке, то изначально все символы будут переведены в unicode, и если мы хотим получить сами символы, то нужно вызывать функцию string()
 	// for _, ch := range string(str) {
 	// 	fmt.Println(ch, string(ch))
 	// }
 
-	userLogin := promptData("Введите логин: ")
-	userPassword := promptData("Введите пароль: ")
+	// userLogin := promptData("Введите логин: ")
+	// userPassword := promptData("Введите пароль: ")
 	// fmt.Println("Введите сколько символов вы хотите в пароле: ")
 	// var userPasswordLength int
 	// fmt.Scan(&userPasswordLength)
-	userUrl := promptData("Введите URL: ")
+	// userUrl := promptData("Введите URL: ")
 
 	// account1 := account{
 	// 	login,
@@ -145,17 +172,45 @@ func main() {
 	// myAccount.outputData() // Чтобы вызвать метод структуры, нужно сначала инстанциировать структуру, а потом вызвать метод структуры. Внутри метода можно использовать поля структуры, к которой он относится. То есть, если мы вызываем метод структуры account, то внутри метода мы можем использовать поля этой структуры
 
 	// Инстанциирую новую структуру:
-	myAccount, err := account.NewAccountWithTimeStamp(userLogin, userPassword, userUrl)
+	// myAccount, err := account.NewAccount(userLogin, userPassword, userUrl)
 	// Таким образом импортируется метод из пакета. Также как со встроенными пакетами
+	// if err != nil {
+	// 	fmt.Println("Неверный формат URL или Логина")
+	// 	return
+	// }
+
+	// myAccount.OutputData()
+
+	// outputPassword(&myAccount)
+
+}
+
+func getMenu() int {
+	color.Cyan("Выберите действие:")
+	var answer int
+	fmt.Println("1. Создать аккаунт")
+	fmt.Println("2. Найти аккаунт")
+	fmt.Println("3. Удалить аккаунт")
+	fmt.Println("4. Выход")
+	fmt.Scanln(&answer)
+	return answer
+}
+
+func createAccount() {
+	userLogin := promptData("Введите логин: ")
+	userPassword := promptData("Введите пароль: ")
+	userUrl := promptData("Введите URL: ")
+	myAccount, err := account.NewAccount(userLogin, userPassword, userUrl)
 	if err != nil {
 		fmt.Println("Неверный формат URL или Логина")
 		return
 	}
-
-	myAccount.OutputData()
-
-	// outputPassword(&myAccount)
-
+	file, err := myAccount.ToBytes()
+	if err != nil {
+		color.Red("Ошибка обработки данных")
+		return
+	}
+	filemanagement.WriteFile(file, "data.json")
 }
 
 func promptData(prompt string) string {
