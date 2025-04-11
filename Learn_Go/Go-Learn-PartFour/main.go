@@ -109,6 +109,9 @@ import (
 
 func main() {
 
+	filemanagement.WriteFile("Привет! Я файл", "test.txt")
+	filemanagement.ReadFile()
+
 	// str := []rune("Привет!)") // Это рунный массив. Руна это по alias для int32, который используется для хранения символов в Go. То есть, когда мы хотим пройтись for по строке, то изначально все символы будут переведены в unicode, и если мы хотим получить сами символы, то нужно вызывать функцию string()
 	// for _, ch := range string(str) {
 	// 	fmt.Println(ch, string(ch))
@@ -149,7 +152,6 @@ func main() {
 		return
 	}
 
-	filemanagement.WriteFile()
 	myAccount.OutputData()
 
 	// outputPassword(&myAccount)
