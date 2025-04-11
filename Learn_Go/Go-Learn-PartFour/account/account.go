@@ -9,7 +9,7 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/fatih/color"
+	"github.com/fatih/color" // Это импорт стороннего пакета. Перед этим необходимо его установить, прописав в терминале go get и путь до пакета. После этого в файле go.mod появятся зависимости, а также появится go.sum файл, в котором будут указаны версии зависимостей
 )
 
 var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*")

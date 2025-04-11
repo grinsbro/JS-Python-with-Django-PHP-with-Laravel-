@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"go-learn-part-four/account" // Таким образом импортируется пакет, который был создан. Всегда необходимо указывать имя модуля, который был создан в go.mod, а потом путь к папке
-	// Это импорт стороннего пакета. Перед этим необходимо его установить, прописав в терминале go get и путь до пакета. После этого в файле go.mod появятся зависимости, а также появится go.sum файл, в котором будут указаны версии зависимостей
+	"go-learn-part-four/filemanagement"
 )
 
 // func main() {
@@ -149,6 +149,7 @@ func main() {
 		return
 	}
 
+	filemanagement.WriteFile()
 	myAccount.OutputData()
 
 	// outputPassword(&myAccount)
