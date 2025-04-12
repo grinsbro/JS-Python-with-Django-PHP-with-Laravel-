@@ -4,7 +4,7 @@ import "github.com/fatih/color"
 
 func PrintError(err any) {
 
-	switch t := err.(type) {
+	switch t := err.(type) { // Это type switch. Он позволяет определить какого типа данные были переданы и выполнить те действия, которые нужны
 	case string:
 		color.Red(t)
 	case int:
