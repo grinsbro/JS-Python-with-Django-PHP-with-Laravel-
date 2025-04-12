@@ -116,14 +116,20 @@ func main() {
 	vault := account.NewVault(filemanagement.NewJsonDb("data.json")) // Создаем новый экземпляр структуры VaultWithDb, которая хранит аккаунты. Внутри структуры Vault создается экземпляр структуры JsonDb, которая отвечает за работу с файлом. Внутри структуры JsonDb создается файл data.json, который будет хранить данные аккаунтов в формате JSON
 Menu:
 	for {
-		answer := getMenu()
+		answer := promptData([]string{
+			"1. Создать аккаунт",
+			"2. Найти аккаунт",
+			"3. Удалить аккаунт",
+			"4. Выход",
+			"Выберите действие",
+		})
 
 		switch answer {
-		case 1:
+		case "1":
 			createAccount(vault)
-		case 2:
+		case "2":
 			findAccount(vault)
-		case 3:
+		case "3":
 			deleteAccount(vault)
 		default:
 			color.Red("Выходим из программы...")
@@ -181,21 +187,21 @@ Menu:
 
 }
 
-func getMenu() int {
-	color.Cyan("Выберите действие:")
-	var answer int
-	fmt.Println("1. Создать аккаунт")
-	fmt.Println("2. Найти аккаунт")
-	fmt.Println("3. Удалить аккаунт")
-	fmt.Println("4. Выход")
-	fmt.Scanln(&answer)
-	return answer
-}
+// func getMenu() int {
+// 	color.Cyan("Выберите действие:")
+// 	var answer int
+// 	fmt.Println("1. Создать аккаунт")
+// 	fmt.Println("2. Найти аккаунт")
+// 	fmt.Println("3. Удалить аккаунт")
+// 	fmt.Println("4. Выход")
+// 	fmt.Scanln(&answer)
+// 	return answer
+// }
 
 func createAccount(vault *account.VaultWithDb) {
-	userLogin := promptData("Введите логин: ")
-	userPassword := promptData("Введите пароль: ")
-	userUrl := promptData("Введите URL: ")
+	userLogin := promptData([]string{"Введите логин"})
+	userPassword := promptData([]string{"Введите пароль"})
+	userUrl := promptData([]string{"Введите URL"})
 	myAccount, err := account.NewAccount(userLogin, userPassword, userUrl)
 	if err != nil {
 		output.PrintError("Неверный формат URL или Логина") // Добавил вывод ошибки из отдельного пакета
@@ -211,7 +217,7 @@ func createAccount(vault *account.VaultWithDb) {
 }
 
 func findAccount(vault *account.VaultWithDb) {
-	url := promptData("Введите URL для поиска: ")
+	url := promptData([]string{"Введите URL для поиска"})
 	accounts := vault.FindAccountsByUrl(url)
 	if len(accounts) == 0 {
 		color.Red("Не найдено аккаунтов с таким URL")
@@ -223,7 +229,7 @@ func findAccount(vault *account.VaultWithDb) {
 }
 
 func deleteAccount(vault *account.VaultWithDb) {
-	url := promptData("Введите URL для удаления: ")
+	url := promptData([]string{"Введите URL для удаления"})
 	isDeleted := vault.DeleteAccountByUrl(url)
 	if isDeleted {
 		color.Green("Аккаунт удален")
@@ -232,8 +238,17 @@ func deleteAccount(vault *account.VaultWithDb) {
 	}
 }
 
-func promptData(prompt string) string {
-	fmt.Print(prompt)
+// Перепишу функцию, чтобы она была дженериком и принимала слайс любого типа
+func promptData[T any](prompt []T) string {
+	for index, value := range prompt {
+		if index == len(prompt)-1 {
+			fmt.Printf("%v : ", value)
+		} else {
+			fmt.Println(value)
+		}
+	}
+
+	// fmt.Print(prompt)
 	var res string
 	fmt.Scanln(&res)
 	return res
