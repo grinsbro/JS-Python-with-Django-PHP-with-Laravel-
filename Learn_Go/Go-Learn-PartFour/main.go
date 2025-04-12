@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"go-learn-part-four/account" // Таким образом импортируется пакет, который был создан. Всегда необходимо указывать имя модуля, который был создан в go.mod, а потом путь к папке
+	"go-learn-part-four/filemanagement"
 
 	"github.com/fatih/color"
 )
@@ -111,7 +112,7 @@ import (
 func main() {
 
 	color.Green("Добро пожаловать в программу менеджера паролей!")
-	vault := account.NewVault()
+	vault := account.NewVault(filemanagement.NewJsonDb("data.json")) // Создаем новый экземпляр структуры VaultWithDb, которая хранит аккаунты. Внутри структуры Vault создается экземпляр структуры JsonDb, которая отвечает за работу с файлом. Внутри структуры JsonDb создается файл data.json, который будет хранить данные аккаунтов в формате JSON
 Menu:
 	for {
 		answer := getMenu()
@@ -190,7 +191,7 @@ func getMenu() int {
 	return answer
 }
 
-func createAccount(vault *account.Vault) {
+func createAccount(vault *account.VaultWithDb) {
 	userLogin := promptData("Введите логин: ")
 	userPassword := promptData("Введите пароль: ")
 	userUrl := promptData("Введите URL: ")
@@ -199,7 +200,6 @@ func createAccount(vault *account.Vault) {
 		fmt.Println("Неверный формат URL или Логина")
 		return
 	}
-	vault = account.NewVault()
 	vault.AddAccount(*myAccount)
 	// data, err := vault.ToBytes()
 	// if err != nil {
@@ -209,7 +209,7 @@ func createAccount(vault *account.Vault) {
 	// filemanagement.WriteFile(data, "data.json")
 }
 
-func findAccount(vault *account.Vault) {
+func findAccount(vault *account.VaultWithDb) {
 	url := promptData("Введите URL для поиска: ")
 	accounts := vault.FindAccountsByUrl(url)
 	if len(accounts) == 0 {
@@ -221,7 +221,7 @@ func findAccount(vault *account.Vault) {
 	}
 }
 
-func deleteAccount(vault *account.Vault) {
+func deleteAccount(vault *account.VaultWithDb) {
 	url := promptData("Введите URL для удаления: ")
 	isDeleted := vault.DeleteAccountByUrl(url)
 	if isDeleted {
