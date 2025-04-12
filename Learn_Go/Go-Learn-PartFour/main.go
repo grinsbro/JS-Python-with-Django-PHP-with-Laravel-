@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"go-learn-part-four/account" // Таким образом импортируется пакет, который был создан. Всегда необходимо указывать имя модуля, который был создан в go.mod, а потом путь к папке
 	"go-learn-part-four/filemanagement"
+	"go-learn-part-four/output"
 
 	"github.com/fatih/color"
 )
@@ -197,7 +198,7 @@ func createAccount(vault *account.VaultWithDb) {
 	userUrl := promptData("Введите URL: ")
 	myAccount, err := account.NewAccount(userLogin, userPassword, userUrl)
 	if err != nil {
-		fmt.Println("Неверный формат URL или Логина")
+		output.PrintError("Неверный формат URL или Логина") // Добавил вывод ошибки из отдельного пакета
 		return
 	}
 	vault.AddAccount(*myAccount)
@@ -227,7 +228,7 @@ func deleteAccount(vault *account.VaultWithDb) {
 	if isDeleted {
 		color.Green("Аккаунт удален")
 	} else {
-		color.Red("Аккаунт не найден")
+		output.PrintError("Аккаунт не найден")
 	}
 }
 

@@ -2,10 +2,9 @@ package account
 
 import (
 	"encoding/json"
+	"go-learn-part-four/output"
 	"strings"
 	"time"
-
-	"github.com/fatih/color"
 )
 
 // Это интерфейс Db, который описывает методы, которые должны быть реализованы в структурах, которые будут работать с файлами. Это нужно для того, чтобы не зависеть от конкретной реализации и использовать разные реализации в зависимости от нужд
@@ -48,7 +47,7 @@ func NewVault(db Db) *VaultWithDb { // Получается, что теперь
 	var vault Vault                    // В противном случае создаю переменную экземпляр структуры Vault, в которую будут записаны данные из файла data.json
 	err = json.Unmarshal(file, &vault) // Преобразую json файл в структуру Vault. Unmarshal возвращает только ошибку, поэтому записываю данные в одну переменную
 	if err != nil {
-		color.Red("Не удалось разобрать файл data.json")
+		output.PrintError("Не удалось разобрать файл")
 		return &VaultWithDb{
 			Vault: Vault{
 				Accounts:  []Account{},
@@ -110,7 +109,7 @@ func (vault *VaultWithDb) save() {
 	vault.UpdatedAt = time.Now()
 	data, err := vault.Vault.ToBytes() // Здесь используется вызов vault.Vault, потому что это метод структуры Vault, а не VaultWithDb
 	if err != nil {
-		color.Red("Не удалось преобразовать")
+		output.PrintError("Ошибка обработки данных")
 	}
 	vault.db.Write(data)
 }
