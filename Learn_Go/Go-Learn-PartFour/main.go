@@ -110,6 +110,14 @@ import (
 
 // var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*")
 
+var menu = map[string]func(*account.VaultWithDb){
+	"1": createAccount,
+	"2": findAccount,
+	"3": deleteAccount,
+} // Map может хранить функции. В случае с меню мы можем сделать ключи опциями, который выбирает пользователь, а в значениях будут функции, которые соответствуют опциям.
+// Важно, что функции должны принимать одинаковые аргументы и возвращать одинаковые значения. В данном случае функции принимают указатель на структуру VaultWithDb, а возвращают ничего. То есть у них одинаковая сигнатура
+// Также важно не вызывать функцию при записи в map, а просто записать ее
+
 func main() {
 
 	color.Green("Добро пожаловать в программу менеджера паролей!")
@@ -124,17 +132,24 @@ Menu:
 			"Выберите действие",
 		})
 
-		switch answer {
-		case "1":
-			createAccount(vault)
-		case "2":
-			findAccount(vault)
-		case "3":
-			deleteAccount(vault)
-		default:
-			color.Red("Выходим из программы...")
+		// Создаю переменную, которая будет вызывать элемент мапы в зависимости от выбранного ответа
+		menuFunc := menu[answer]
+		if menuFunc == nil {
 			break Menu
 		}
+		menuFunc(vault)
+
+		// switch answer {
+		// case "1":
+		// 	createAccount(vault)
+		// case "2":
+		// 	findAccount(vault)
+		// case "3":
+		// 	deleteAccount(vault)
+		// default:
+		// 	color.Red("Выходим из программы...")
+		// 	break Menu
+		// }
 
 	}
 
