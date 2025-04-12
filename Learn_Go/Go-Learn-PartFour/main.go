@@ -5,6 +5,7 @@ import (
 	"go-learn-part-four/account" // Таким образом импортируется пакет, который был создан. Всегда необходимо указывать имя модуля, который был создан в go.mod, а потом путь к папке
 	"go-learn-part-four/filemanagement"
 	"go-learn-part-four/output"
+	"strings"
 
 	"github.com/fatih/color"
 )
@@ -135,6 +136,7 @@ Menu:
 		// Создаю переменную, которая будет вызывать элемент мапы в зависимости от выбранного ответа
 		menuFunc := menu[answer]
 		if menuFunc == nil {
+			color.Red("Выходим из программы...")
 			break Menu
 		}
 		menuFunc(vault)
@@ -233,7 +235,7 @@ func createAccount(vault *account.VaultWithDb) {
 
 func findAccount(vault *account.VaultWithDb) {
 	url := promptData([]string{"Введите URL для поиска"})
-	accounts := vault.FindAccountsByUrl(url)
+	accounts := vault.FindAccounts(url, checkUrl)
 	if len(accounts) == 0 {
 		color.Red("Не найдено аккаунтов с таким URL")
 	}
@@ -241,6 +243,10 @@ func findAccount(vault *account.VaultWithDb) {
 	for _, account := range accounts {
 		account.OutputData()
 	}
+}
+
+func checkUrl(acc account.Account, url string) bool {
+	return strings.Contains(acc.Url, url)
 }
 
 func deleteAccount(vault *account.VaultWithDb) {
