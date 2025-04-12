@@ -67,10 +67,10 @@ func (vault *VaultWithDb) AddAccount(acc Account) {
 	vault.save()
 }
 
-func (vault *VaultWithDb) FindAccounts(url string, checker func(Account, string) bool) []Account {
+func (vault *VaultWithDb) FindAccounts(str string, checker func(Account, string) bool) []Account {
 	var accounts []Account
 	for _, data := range vault.Accounts {
-		isMatched := checker(data, url)
+		isMatched := checker(data, str)
 		if isMatched {
 			accounts = append(accounts, data)
 		}

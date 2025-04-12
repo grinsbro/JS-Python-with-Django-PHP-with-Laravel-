@@ -113,11 +113,21 @@ import (
 
 var menu = map[string]func(*account.VaultWithDb){
 	"1": createAccount,
-	"2": findAccount,
-	"3": deleteAccount,
+	"2": findAccountByUrl,
+	"3": findAccountByLogin,
+	"4": deleteAccount,
 } // Map может хранить функции. В случае с меню мы можем сделать ключи опциями, который выбирает пользователь, а в значениях будут функции, которые соответствуют опциям.
 // Важно, что функции должны принимать одинаковые аргументы и возвращать одинаковые значения. В данном случае функции принимают указатель на структуру VaultWithDb, а возвращают ничего. То есть у них одинаковая сигнатура
 // Также важно не вызывать функцию при записи в map, а просто записать ее
+
+var menuVariants = []string{
+	"1. Создать аккаунт",
+	"2. Найти аккаунт по URL",
+	"3. Найти аккаунт по логину",
+	"4. Удалить аккаунт",
+	"5. Выход",
+	"Выберите действие",
+}
 
 func main() {
 
@@ -125,13 +135,7 @@ func main() {
 	vault := account.NewVault(filemanagement.NewJsonDb("data.json")) // Создаем новый экземпляр структуры VaultWithDb, которая хранит аккаунты. Внутри структуры Vault создается экземпляр структуры JsonDb, которая отвечает за работу с файлом. Внутри структуры JsonDb создается файл data.json, который будет хранить данные аккаунтов в формате JSON
 Menu:
 	for {
-		answer := promptData([]string{
-			"1. Создать аккаунт",
-			"2. Найти аккаунт",
-			"3. Удалить аккаунт",
-			"4. Выход",
-			"Выберите действие",
-		})
+		answer := promptData(menuVariants...) // Можно вынести меню в отдельный массив строк, но чтобы разные элементы были раскиданы по разным аргументам функции, нужно использовать ... в аргументах функции. Это называется распаковка массива. То есть мы распаковываем массив строк в аргументы функции, чтобы они были разными аргументами
 
 		// Создаю переменную, которая будет вызывать элемент мапы в зависимости от выбранного ответа
 		menuFunc := menu[answer]
@@ -216,9 +220,9 @@ Menu:
 // }
 
 func createAccount(vault *account.VaultWithDb) {
-	userLogin := promptData([]string{"Введите логин"})
-	userPassword := promptData([]string{"Введите пароль"})
-	userUrl := promptData([]string{"Введите URL"})
+	userLogin := promptData("Введите логин")
+	userPassword := promptData("Введите пароль")
+	userUrl := promptData("Введите URL")
 	myAccount, err := account.NewAccount(userLogin, userPassword, userUrl)
 	if err != nil {
 		output.PrintError("Неверный формат URL или Логина") // Добавил вывод ошибки из отдельного пакета
@@ -233,9 +237,11 @@ func createAccount(vault *account.VaultWithDb) {
 	// filemanagement.WriteFile(data, "data.json")
 }
 
-func findAccount(vault *account.VaultWithDb) {
-	url := promptData([]string{"Введите URL для поиска"})
-	accounts := vault.FindAccounts(url, checkUrl)
+func findAccountByUrl(vault *account.VaultWithDb) {
+	url := promptData("Введите URL для поиска")
+	accounts := vault.FindAccounts(url, func(acc account.Account, url string) bool {
+		return strings.Contains(acc.Url, url)
+	})
 	if len(accounts) == 0 {
 		color.Red("Не найдено аккаунтов с таким URL")
 	}
@@ -245,12 +251,21 @@ func findAccount(vault *account.VaultWithDb) {
 	}
 }
 
-func checkUrl(acc account.Account, url string) bool {
-	return strings.Contains(acc.Url, url)
+func findAccountByLogin(vault *account.VaultWithDb) {
+	login := promptData("Введите логин для поиска")
+	accounts := vault.FindAccounts(login, func(acc account.Account, login string) bool {
+		return strings.Contains(acc.Login, login)
+	})
+	if len(accounts) == 0 {
+		color.Red("Не найдено аккаунтов с таким логином")
+	}
+	for _, account := range accounts {
+		account.OutputData()
+	}
 }
 
 func deleteAccount(vault *account.VaultWithDb) {
-	url := promptData([]string{"Введите URL для удаления"})
+	url := promptData("Введите URL для удаления")
 	isDeleted := vault.DeleteAccountByUrl(url)
 	if isDeleted {
 		color.Green("Аккаунт удален")
@@ -259,8 +274,8 @@ func deleteAccount(vault *account.VaultWithDb) {
 	}
 }
 
-// Перепишу функцию, чтобы она была дженериком и принимала слайс любого типа
-func promptData[T any](prompt []T) string {
+// Перепишу функцию, чтобы она была дженериком и принимала слайс любого типа (В итоге убрал дженерик)
+func promptData(prompt ...string) string { // Чтобы функция принимала любое количество аргументов, нужно указать ... в аргументах функции
 	for index, value := range prompt {
 		if index == len(prompt)-1 {
 			fmt.Printf("%v : ", value)
