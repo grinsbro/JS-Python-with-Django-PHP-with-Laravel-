@@ -3,11 +3,13 @@ package main
 import (
 	"fmt"
 	"go-learn-part-four/account" // Таким образом импортируется пакет, который был создан. Всегда необходимо указывать имя модуля, который был создан в go.mod, а потом путь к папке
+	"go-learn-part-four/encrypter"
 	"go-learn-part-four/filemanagement"
 	"go-learn-part-four/output"
 	"strings"
 
 	"github.com/fatih/color"
+	"github.com/joho/godotenv"
 )
 
 // func main() {
@@ -132,7 +134,13 @@ var menuVariants = []string{
 func main() {
 
 	color.Green("Добро пожаловать в программу менеджера паролей!")
-	vault := account.NewVault(filemanagement.NewJsonDb("data.json")) // Создаем новый экземпляр структуры VaultWithDb, которая хранит аккаунты. Внутри структуры Vault создается экземпляр структуры JsonDb, которая отвечает за работу с файлом. Внутри структуры JsonDb создается файл data.json, который будет хранить данные аккаунтов в формате JSON
+
+	err := godotenv.Load()
+	if err != nil {
+		output.PrintError("Не удалось найти .env файл")
+	}
+	vault := account.NewVault(filemanagement.NewJsonDb("data.vault"), *encrypter.NewEncrypter()) // Создаем новый экземпляр структуры VaultWithDb, которая хранит аккаунты. Внутри структуры Vault создается экземпляр структуры JsonDb, которая отвечает за работу с файлом. Внутри структуры JsonDb создается файл data.json, который будет хранить данные аккаунтов в формате JSON
+	// Переписал код так, чтобы при создании экземляра VaultWithDb принимался еще энкриптер
 Menu:
 	for {
 		answer := promptData(menuVariants...) // Можно вынести меню в отдельный массив строк, но чтобы разные элементы были раскиданы по разным аргументам функции, нужно использовать ... в аргументах функции. Это называется распаковка массива. То есть мы распаковываем массив строк в аргументы функции, чтобы они были разными аргументами
@@ -300,4 +308,14 @@ func promptData(prompt ...string) string { // Чтобы функция прин
 // 		password[i] = letterRunes[rand.IntN(len(letterRunes))]
 // 	}
 // 	return string(password)
+// }
+
+// Функция может возвращать другую функцию
+// В данном случае происходит замыкание. То есть функция menuCounter возвращает другую функцию, которая будет использовать переменную i, которая была объявлена в родительской функции menuCounter. То есть переменная i будет доступна только внутри функции menuCounter и функции, которую она возвращает
+// func menuCounter() func() {
+// 	i := 0
+// 	return func() {
+// 		i++
+// 		fmt.Println(i)
+// 	}
 // }
