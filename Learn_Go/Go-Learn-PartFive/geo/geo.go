@@ -19,12 +19,16 @@ type CityPopulationResponse struct {
 	Error bool `json:"error"` // Тэг также для подставления нужного поля из json файла
 }
 
+// Перепишу код, чтобы использовать переменные ошибок в тестах
+var ErrorNoCity = errors.New("NO_CITY") // Переменные, где вызываются ошибки должны начинаться с Err или Error, потому что иначе компилятор будет подсвечивать эту переменную
+var ErrorNot200 = errors.New("NOT200")
+
 // Функция, которая проверяет значение полученное от пользователя. Если значение передано не было, то выполняется GET запрос на сайт, который по ip вычисляет город
 func GetMyLocation(city string) (*GeoData, error) {
 	if city != "" {
 		isCity := checkCity(city) // Добавляю также проверку, что если полльзователь ввел город, то такой город должен существовать
 		if !isCity {
-			panic("Такого города нет")
+			return nil, ErrorNoCity
 		}
 		return &GeoData{ // Если все ок, то создаю экземпляр структуры с переданным городом
 			City: city,
@@ -37,7 +41,7 @@ func GetMyLocation(city string) (*GeoData, error) {
 	}
 	if response.StatusCode != 200 {
 		fmt.Println(response.StatusCode)
-		return nil, errors.New("NOT200") // Если статус код не равен 200, то возвращаю ошибку
+		return nil, ErrorNot200 // Если статус код не равен 200, то возвращаю ошибку
 	}
 	defer response.Body.Close()            // Добавляю закрытие Body в конце функции, чтобы не возникло утечки памяти
 	body, err := io.ReadAll(response.Body) // если все проверки были пройдены, то читаю переменную Body у response, потому что response это экземпляр структуры http

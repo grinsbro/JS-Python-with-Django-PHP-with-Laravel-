@@ -23,7 +23,7 @@ func main() {
 	// fmt.Println(*age)
 
 	city := flag.String("city", "", "Город пользователя")
-	format := flag.Int("format", 1, "Формат вывода погоды")
+	format := flag.Int("format", 2, "Формат вывода погоды")
 
 	flag.Parse()
 
